@@ -26,3 +26,36 @@ Laravelの環境構築の際、php-fpm, Nginx, mysqlなどが最低限必要に�
 
 Laravelでは、VueやReactとの統合の仕組みは整っていて、すぐに使用することができる。
 SPAではない場合、基本はbladeのテンプレートを使用するがその中にid=appをもつタグとコンポーネントを仕込んでおくことでVueのコンポーネントを表示することができる。つまり、ルーティングはLaravelに任せつつ、HTML（Blade）を表示。その中で使用したいVueのコンポーネントを組み込んで置くことでVueを使用することができる。おそらく普通は、blade側で書くことは少なく、がわだけ作って後はVueで表示やメソッド実行をしていると思われる。Bladeの中にVueを埋め込んでいるイメージ。Vueについては、resource/js/components配下でリソースを管理。resource/js/api.jsでコンポーネント名と、どのVueファイルをマッピングするかを設定しているポイ。そのあたりを見れば把握できそう。SPAの場合は、一枚だけHTMLとしてBladeをルーティングで表示するが、中身はid=appでVueを表示する。vueの中でaxiosでLaravelのAPIを叩き、データを貰うイメージ。Laravel側では、web.phpではなく、api.phpにルーティングを書くとRESTAPIのルーティングが実装できる。本来の意味でSPAするならもはやLaravelはAPIだけ開放するだけでも良さそう。フロントはS3とかで。でも必ずしもそうではなさそうだった。
+
+
+
+## Facade
+
+BFFみたいなイメージ。前に立って、使用者は中を意識することなく呼び出せる。実際は、定義しておいたエイリアスなどを元に、Facadeクラスを呼び出して登録しておいたコンテナを返す。
+
+__callStatic($method, $args)
+
+で定義されていない関数が呼ばれた場合を定義。アクセス不能なメソッドに対して静的に実行しようとしたタイミングで呼ばれる。取得してきたコンテナをもとにこの引数のmethodとargsを使って実行する。
+
+これでFacadeわかった気がする↓
+
+https://reffect.co.jp/laravel/laravel-facade-understanding
+
+
+
+サービスコンテナ、プロバイダーのあたりの知識はあると良さそう。。。後はConfig系かな
+
+
+
+### .envやConfigを更新したときは…
+
+```bash
+php artisan cache:clear
+php artisan config:cache
+```
+
+これで反映されるはず。それでもだめなら↓
+
+```
+ rm -f bootstrap/cache/config.php
+```
